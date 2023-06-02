@@ -9,7 +9,7 @@ df = df.dropna()
 
 
 X = df.iloc[: , 0:10].values
-y = df.iloc[: , 9].values
+y = df.iloc[: , ].values
 
 # y value constant [fog,rainy,cloudy,sunny]
 n = 5

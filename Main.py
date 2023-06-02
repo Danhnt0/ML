@@ -441,35 +441,36 @@ app = QtWidgets.QApplication(sys.argv)
 Form = QtWidgets.QWidget()
 ui = Ui_Form()
 ui.setupUi(Form)
-# url = "https://api.weatherbit.io/v2.0/current?&city=Hanoi&country=VN&key=ccc9d9071252498cbd589c8689961bd8&include=minutely"
+url = "https://api.weatherbit.io/v2.0/current?&city=Hanoi&country=VN&key=f7f4fb4d3ad146e4862e400a8038631b&include=minutely"
 
-# response = requests.get(url)
-# data = response.json()
+response = requests.get(url)
+data = response.json()
 
 
-# tem = data['data'][0]['temp']
-# app_temp = data['data'][0]['app_temp']
-# uv = int(data['data'][0]['uv'])
-# win_spd = data['data'][0]['wind_spd']
-# weather_des = data['data'][0]['weather']['description']
-# hum = data['data'][0]['rh']
-# pres = data['data'][0]['pres']
-# vis = data['data'][0]['vis']
-# aqi = data['data'][0]['aqi']
+tem = round(data['data'][0]['temp'])
+app_temp = round(data['data'][0]['app_temp'])
+uv = int(data['data'][0]['uv'])
+win_spd = data['data'][0]['wind_spd']
+weather_des = data['data'][0]['weather']['description']
+hum = data['data'][0]['rh']
+pres = data['data'][0]['pres']
+vis = data['data'][0]['vis']
+aqi = data['data'][0]['aqi']
 
-data_now = GetCurrent.data_now
+# data_now = GetCurrent.data_now
 
-tem = round(data_now[8] - 273.15)
-app_temp = data_now[5] - 273.15
-uv = int(data_now[10])
-win_spd = data_now[1]
-weather_des = data_now[9]
-hum = data_now[0]
-pres = data_now[4]
-vis = data_now[-2]
-aqi = 100
+# tem = round(data_now[8] - 273.15)
+# app_temp = round(data_now[5] - 273.15)
+# uv = int(data_now[10])
+# win_spd = data_now[1]
+# weather_des = data_now[9]
+# hum = data_now[0]
+# pres = data_now[4]
+# vis = data_now[-2]
+# aqi = 100
 
-weather_de = weather_des
+
+weather_de = GetCurrent.get_weather(weather_des.lower())
 
 if weather_de == 0:
     weather_de = "Nhiều mây"
@@ -551,12 +552,18 @@ ui.tem5h.setText(str(temp[4])+" C")
 
 # # set icon weather to background
 
-ui.iconnow.setStyleSheet("background-image:" + Controller.get_icon_url(weather_des))
+ui.iconnow.setStyleSheet("background-image:" + Controller.get_icon_url(GetCurrent.get_weather(weather_des.lower())))
 ui.icon1h.setStyleSheet("background-image:" + Controller.predict_weather_1h())
 ui.icon2h.setStyleSheet("background-image:" + Controller.predict_weather_2h())
 ui.icon3h.setStyleSheet("background-image:" + Controller.predict_weather_3h())
 ui.icon4h.setStyleSheet("background-image:" + Controller.predict_weather_4h())
 ui.icon5h.setStyleSheet("background-image:" + Controller.predict_weather_5h())
+
+# set tommorow weather
+
+ui.temtomo.setText(str(Controller.predict_temp_day())+" C")
+ui.texttomo.setText(Controller.predict_weather_day()[0])
+ui.icontomo.setStyleSheet("background-image:" + Controller.predict_weather_day()[1])
 
 
 if __name__ == "__main__":

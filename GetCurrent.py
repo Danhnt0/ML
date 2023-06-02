@@ -1,6 +1,36 @@
 import requests
 import datetime
 
+now = datetime.datetime.now()
+
+now = now.strftime("%Y-%m-%d")
+
+next = datetime.datetime.now() + datetime.timedelta(days=1)
+
+next = next.strftime("%Y-%m-%d")
+
+
+
+
+url = f'https://api.weatherbit.io/v2.0/history/hourly?&city=Hanoi&country=VN&start_date={now}&&end_date={next}&key=f7f4fb4d3ad146e4862e400a8038631b'
+
+
+response = requests.get(url)
+
+data = response.json()
+
+now = datetime.datetime.now()
+
+prev = now - datetime.timedelta(hours=5)
+
+now = now.strftime("%Y-%m-%dT%H:%M:%S")
+
+prev = prev.strftime("%Y-%m-%dT%H:%M:%S")
+
+# get 5h previor from now by check timestamp_local
+
+# get data humidity,wind_speed,wind_dir,precip,pressure,app_temp,cloud,hour,month,temp
+input_data = []
 
 weather_map = {
     0:["fog","haze","smoke","dust","mist","foggy","hazy","smoky","dusty","misty"],
@@ -15,34 +45,16 @@ def get_weather(weather):
         if weather in value:
             return key
 
-url = 'http://dataservice.accuweather.com/currentconditions/v1/353412/historical?apikey=%099GfDMXluwADxMLMKrjy36x2ynAgNOvEv&details=true'
-
-response = requests.get(url)
-data = response.json()
-
-# get data humidity,wind_speed,wind_dir,precip,pressure,app_temp,cloud,hour,month,temp
-# get data from 5h before
-
-input_data = []
-
-data_now = []
-
-for i in range(4, -1, -1):
-    humidity = data[i]['RelativeHumidity']
-    wind_speed = data[i]['Wind']['Speed']['Metric']['Value']
-    wind_dir = data[i]['Wind']['Direction']['Degrees']
-    precip = data[i]['Precip1hr']['Metric']['Value']
-    pressure = data[i]['Pressure']['Metric']['Value']
-    app_temp = data[i]['RealFeelTemperature']['Metric']['Value'] + 273.15
-    cloud = data[i]['CloudCover']
-    hour = datetime.datetime.strptime(data[i]['LocalObservationDateTime'], '%Y-%m-%dT%H:%M:%S%z').hour
-    temp = data[i]['Temperature']['Metric']['Value'] + 273.15
-    weather = data[i]['WeatherText']
-    if i == 0:
-        UV = data[i]['UVIndex']
-        visibility = data[i]['Visibility']['Metric']['Value']
-        data_now = [humidity, wind_speed, wind_dir, precip, pressure, app_temp, cloud, hour, temp,get_weather(weather.lower()),UV,visibility]
-
-    input_data.append([humidity, wind_speed, wind_dir, precip, pressure, app_temp, cloud, hour, temp,get_weather(weather.lower())])
-
-
+for  i in range(len(data['data'])):
+    if data['data'][i]['timestamp_local'] < now and data['data'][i+1]['timestamp_local'] > prev :
+        humidity = data['data'][i]['rh']
+        wind_speed = data['data'][i]['wind_spd']
+        wind_dir = data['data'][i]['wind_dir']
+        precip = data['data'][i]['precip']
+        pressure = data['data'][i]['pres']
+        app_temp = data['data'][i]['app_temp'] + 273.15
+        cloud = data['data'][i]['clouds']
+        hour = datetime.datetime.strptime(data['data'][i]['timestamp_local'], '%Y-%m-%dT%H:%M:%S').hour
+        temp = data['data'][i]['temp'] + 273.15
+        weather = data['data'][i]['weather']['description']
+        input_data.append([humidity, wind_speed, wind_dir, precip, pressure, app_temp, cloud, hour, temp,get_weather(weather.lower())])
