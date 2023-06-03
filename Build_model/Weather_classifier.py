@@ -2,6 +2,9 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
 
 # load data
 df = pd.read_csv('data/weather_normal.csv')
@@ -9,7 +12,7 @@ df = df.dropna()
 
 
 X = df.iloc[: , 0:10].values
-y = df.iloc[: , ].values
+y = df.iloc[: , 9].values
 
 # y value constant [fog,rainy,cloudy,sunny]
 n = 5
@@ -83,7 +86,7 @@ model = tf.keras.Sequential([
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-model.fit(X_train_lstm, y_train, epochs=25, batch_size= 128, validation_split = 0.2)
+history = model.fit(X_train_lstm, y_train, epochs=25, batch_size= 128, validation_split = 0.2)
 
 
 # evaluate model
@@ -92,3 +95,45 @@ model.evaluate(X_test_lstm, y_test)
 # save model
 
 model.save('model/predict_weather5.h5')
+
+# predict weather
+
+y_pred = model.predict(X_test_lstm)
+
+y_pred = np.argmax(y_pred, axis=1)
+
+y_test = np.argmax(y_test, axis=1)
+
+print(classification_report(y_test, y_pred))
+
+# confusion matrix
+
+cm = confusion_matrix(y_test, y_pred)
+
+plt.figure(figsize=(10, 10))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# plot loss and accuracy
+
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model Loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper right')
+plt.title('Model Loss')
+plt.show()
+
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Model Accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.title('Model Accuracy')
+plt.show()
+
+

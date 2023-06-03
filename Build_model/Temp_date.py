@@ -135,17 +135,7 @@ print('mse: ', mean_squared_error(y_test, y_pred))
 
 print('r2: ', r2_score(y_test, y_pred))
 
-# plot prediction
 
-plt.figure(figsize=(10, 6))
-
-plt.plot(y_test[:, 0], label='actual')
-plt.plot(y_pred[:, 0], label='prediction')
-
-plt.title('temperature day prediction')
-
-plt.legend()
-plt.show()
 
 
 

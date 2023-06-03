@@ -42,7 +42,7 @@ def predict_temp():
     X = np.reshape(X, (1,50,1))
     y_pred = model.predict(X)
     y_pred = y_pred*y_std + y_mean - 273.15
-    y_pred = np.round(y_pred,1, out=None)
+    y_pred = np.round(y_pred, out=None)
     return y_pred[0]
 
 
