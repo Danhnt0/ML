@@ -324,25 +324,7 @@ class Ui_Form(object):
 
 
 
-app = QtWidgets.QApplication(sys.argv)
-Form = QtWidgets.QWidget()
-ui = Ui_Form()
-ui.setupUi(Form)
-url = "https://api.weatherbit.io/v2.0/current?&city=Hanoi&country=VN&key=f7f4fb4d3ad146e4862e400a8038631b&include=minutely"
 
-response = requests.get(url)
-data = response.json()
-
-
-tem = round(data['data'][0]['temp'])
-app_temp = round(data['data'][0]['app_temp'])
-uv = int(data['data'][0]['uv'])
-win_spd = data['data'][0]['wind_spd']
-weather_des = data['data'][0]['weather']['description']
-hum = data['data'][0]['rh']
-pres = data['data'][0]['pres']
-vis = data['data'][0]['vis']
-aqi = data['data'][0]['aqi']
 
 # data_now = GetCurrent.data_now
 
